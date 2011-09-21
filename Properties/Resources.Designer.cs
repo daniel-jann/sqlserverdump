@@ -80,7 +80,8 @@ namespace Helvartis.SQLServerDump.Properties {
         
         /// <summary>
         ///   Recherche une chaîne localisée semblable à sqlserverdump version {version}
-        ///By Daniel Jann, based on the mysqldump utility by Igor Romanenko, Monty, Jani &amp; Sinisa.
+        ///By Daniel Jann, inspired by the mysqldump utility by
+        ///Igor Romanenko, Monty, Jani &amp; Sinisa.
         ///This software comes with ABSOLUTELY NO WARRANTY. This is free software,
         ///and you are welcome to modify and redistribute it under the GPL license.
         ///
@@ -89,7 +90,7 @@ namespace Helvartis.SQLServerDump.Properties {
         ///
         ///The following options may be given:
         ///--all-databases       Dump all the databases. This will be same as --databases
-        ///                      with all databases sel [le reste de la chaîne a été tronqué]&quot;;.
+        ///                      with all databases [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
         internal static string Help {
             get {
