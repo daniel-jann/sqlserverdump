@@ -130,6 +130,10 @@ Igor Romanenko, Monty, Jani &amp; Sinisa.
 This software comes with ABSOLUTELY NO WARRANTY. This is free software,
 and you are welcome to modify and redistribute it under the GPL license.
 
+When dumping data containing non-ascii base characters, use the --result-file
+rather than dumping the command line output to a file, because dumping
+the command-line to a file uses a DOS encoding.
+
 Dumping structure and contents of SQL Server databases and objects.
 {usage}
 

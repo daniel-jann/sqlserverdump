@@ -85,12 +85,11 @@ namespace Helvartis.SQLServerDump.Properties {
         ///This software comes with ABSOLUTELY NO WARRANTY. This is free software,
         ///and you are welcome to modify and redistribute it under the GPL license.
         ///
-        ///Dumping structure and contents of SQL Server databases and objects.
-        ///{usage}
+        ///When dumping data containing non-ascii base characters, use the --result-file
+        ///rather than dumping the command line output to a file, because dumping
+        ///the command-line to a file uses a DOS encoding.
         ///
-        ///The following options may be given:
-        ///--all-databases       Dump all the databases. This will be same as --databases
-        ///                      with all databases [le reste de la chaîne a été tronqué]&quot;;.
+        ///Dumping structure and contents of S [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
         internal static string Help {
             get {
