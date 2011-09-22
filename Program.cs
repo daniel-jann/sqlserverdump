@@ -69,12 +69,19 @@ namespace Helvartis.SQLServerDump
             Server server;
             try
             {
-                server = new Server(arguments.ServerName);
+                if (arguments.Username != null)
+                {
+                    server = new Server(new ServerConnection(arguments.ServerName, arguments.Username, arguments.Password == null ? "" : arguments.Password));
+                }
+                else
+                {
+                    server = new Server(arguments.ServerName);
+                }
                 server.Databases.Refresh(); // Try to connect to server
             }
-            catch (ConnectionFailureException)
+            catch (ConnectionFailureException ex)
             {
-                Console.Error.WriteLine("Could not connect to server " + arguments.ServerName);
+                Console.Error.WriteLine(ex.Message + (ex.InnerException != null ? ": "+ex.InnerException.Message : ""));
                 return;
             }
             

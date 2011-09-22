@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CommandLine.Utility;
+using System.IO;
 
 namespace Helvartis.SQLServerDump
 {
@@ -12,8 +13,10 @@ namespace Helvartis.SQLServerDump
         private string[] _databaseObjects = null; // null means ALL
         private bool _showHelp = false;
         private bool _wrongOptions = false;
+        private string _password = null;
         private string _resultFile = null;
         private string _serverName = null;
+        private string _username = null;
         private bool _includeSystemDatabases = false;
         private bool _includeSystemObjects = false;
 
@@ -36,6 +39,11 @@ namespace Helvartis.SQLServerDump
             get { return _includeSystemObjects; }
             set { _includeSystemObjects = value; }
         }
+        public string Password
+        {
+            get { return _password; }
+            set { _password = value; }
+        }
         public string ResultFile
         {
             get { return _resultFile; }
@@ -49,6 +57,11 @@ namespace Helvartis.SQLServerDump
         public bool ShowHelp
         {
             get { return _showHelp; }
+        }
+        public string Username
+        {
+            get { return _username; }
+            set { _username = value; }
         }
         public string[] DatabaseObjects
         {
@@ -101,7 +114,22 @@ namespace Helvartis.SQLServerDump
             if (ContainsKey("system-databases")) { _includeSystemDatabases = true; }
             if (ContainsKey("result-file")) { _resultFile = this["result-file"]; }
             if (ContainsKey("system-objects")) { _includeSystemObjects = true; }
-
+            if (ContainsKey("username")) { _username = this["username"]; }
+            if (ContainsKey("password")) {
+                _password = this["password"];
+                if (_password == "true") // Password value not included in the command,
+                {                        // let's read it from stdin without echoing it.
+                    _password = "";
+                    ConsoleKeyInfo keyInfo;
+                    do
+                    {
+                        keyInfo = Console.ReadKey(true);
+                        if (keyInfo.Key != ConsoleKey.Enter && keyInfo.KeyChar != '\0') {
+                            _password += keyInfo.KeyChar;
+                        }
+                    } while (keyInfo == null || keyInfo.Key != ConsoleKey.Enter);
+                }
+            }
         }
     }
 }
