@@ -158,6 +158,8 @@ When dumping data containing non-ascii base characters, use the --result-file
 rather than dumping the command line output to a file, because dumping
 the command-line to a file uses a DOS encoding.
 
+The resulting dump can be used in Microsoft's SQL Server Management Studio.
+
 Dumping structure and contents of SQL Server databases and objects.
 {usage}
 

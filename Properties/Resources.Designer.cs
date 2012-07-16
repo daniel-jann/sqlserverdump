@@ -161,7 +161,7 @@ namespace Helvartis.SQLServerDump.Properties {
         ///rather than dumping the command line output to a file, because dumping
         ///the command-line to a file uses a DOS encoding.
         ///
-        ///Dumping structure and contents of S [le reste de la chaîne a été tronqué]&quot;;.
+        ///The resulting dump can be used in M [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
         internal static string Help {
             get {
