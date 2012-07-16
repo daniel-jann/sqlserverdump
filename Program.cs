@@ -7,12 +7,13 @@ using Helvartis.SQLServerDump.Properties;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Sdk.Sfc;
 using Microsoft.SqlServer.Management.Smo;
+using System.Security;
 
 namespace Helvartis.SQLServerDump
 {
     class Program
     {
-        public const String PRODUCT_VERSION = "0.0.1";
+        public const String PRODUCT_VERSION = "0.2";
         private SQLServerDumpArguments arguments;
 
         public static void Main(string[] args)
@@ -141,25 +142,72 @@ namespace Helvartis.SQLServerDump
             TextWriter output;
             if (arguments.ResultFile != null)
             {
-                output = new StreamWriter(arguments.ResultFile);
+                try
+                {
+                    output = new StreamWriter(arguments.ResultFile);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Console.Out.WriteLine(Resources.ErrResultFileUnauthorizedAccessException);
+                    return;
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    Console.Out.WriteLine(Resources.ErrResultFileDirectoryNotFoundException);
+                    return;
+                }
+                catch (ArgumentException)
+                {
+                    if (arguments.ResultFile == String.Empty)
+                    {
+                        Console.Out.WriteLine(Resources.ErrResultFileArgumentExceptionEmpty);
+                    }
+                    else
+                    {
+                        Console.Out.WriteLine(Resources.ErrResultFileArgumentExceptionSystemDevice);
+                    }
+                    return;
+                }
+                catch (PathTooLongException)
+                {
+                    Console.Out.WriteLine(Resources.ErrResultFilePathTooLongException);
+                    return;
+                }
+                catch (IOException)
+                {
+                    Console.Out.WriteLine(Resources.ErrResultFileIOException);
+                    return;
+                }
+                catch (SecurityException)
+                {
+                    Console.Out.WriteLine(Resources.ErrResultFileSecurityException);
+                    return;
+                }
             }
             else
             {
                 output = System.Console.Out;
             }
 
-            foreach (string dbName in arguments.Databases)
+            try
             {
-                Database db = server.Databases[dbName];
-                String header = "-- DATABASE\n";
-                Output(db, output, scrp, null, ref header);
-                output.WriteLine(String.Format("USE {0};", db.Name));
-                Output(db.Tables, output, scrp, "-- TABLES\n");
-                Output(db.Views, output, scrp, "-- VIEWS\n");
-                Output(db.UserDefinedFunctions, output, scrp, "-- USER DEFINED FUNCTIONS\n");
-                Output(db.StoredProcedures, output, scrp, "-- STORED PROCEDURES\n");
-                Output(db.Synonyms, output, scrp, "-- SYNONYMS\n");
-                Output(db.Triggers, output, scrp, "-- TRIGGERS\n");
+                foreach (string dbName in arguments.Databases)
+                {
+                    Database db = server.Databases[dbName];
+                    String header = "-- DATABASE\n";
+                    Output(db, output, scrp, null, ref header);
+                    output.WriteLine(String.Format("USE {0};", db.Name));
+                    Output(db.Tables, output, scrp, "-- TABLES\n");
+                    Output(db.Views, output, scrp, "-- VIEWS\n");
+                    Output(db.UserDefinedFunctions, output, scrp, "-- USER DEFINED FUNCTIONS\n");
+                    Output(db.StoredProcedures, output, scrp, "-- STORED PROCEDURES\n");
+                    Output(db.Synonyms, output, scrp, "-- SYNONYMS\n");
+                    Output(db.Triggers, output, scrp, "-- TRIGGERS\n");
+                }
+            }
+            catch (IOException)
+            {
+                Console.Out.WriteLine(Resources.ErrIO);
             }
             output.Close();
         }

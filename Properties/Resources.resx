@@ -117,11 +117,35 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ErrIO" xml:space="preserve">
+    <value>An I/O error has occured while writing to the output (if using Result file, was the media disconnected during write ?)</value>
+  </data>
   <data name="ErrMoreThanOneLocalInstance" xml:space="preserve">
     <value>There is more than one local instance. Please use --server-name to select the instance to use.</value>
   </data>
   <data name="ErrNoLocalInstance" xml:space="preserve">
     <value>There is no local instance running</value>
+  </data>
+  <data name="ErrResultFileArgumentExceptionEmpty" xml:space="preserve">
+    <value>Result file argument is empty.</value>
+  </data>
+  <data name="ErrResultFileArgumentExceptionSystemDevice" xml:space="preserve">
+    <value>Result file contains the name of a system device (com1, com2, ...)</value>
+  </data>
+  <data name="ErrResultFileDirectoryNotFoundException" xml:space="preserve">
+    <value>Result file's directory not found.</value>
+  </data>
+  <data name="ErrResultFileIOException" xml:space="preserve">
+    <value>Result file includes an incorrect or invalid syntax for file name, directory name, or volume label syntax.</value>
+  </data>
+  <data name="ErrResultFilePathTooLongException" xml:space="preserve">
+    <value>Result file path or filename is too long.</value>
+  </data>
+  <data name="ErrResultFileSecurityException" xml:space="preserve">
+    <value>This software doesn't have permission to access the result file (try executing it as a user having more privileges)</value>
+  </data>
+  <data name="ErrResultFileUnauthorizedAccessException" xml:space="preserve">
+    <value>Access to result file is not authorized.</value>
   </data>
   <data name="Help" xml:space="preserve">
     <value>sqlserverdump version {version}
