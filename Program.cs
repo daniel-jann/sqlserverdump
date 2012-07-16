@@ -13,7 +13,7 @@ namespace Helvartis.SQLServerDump
 {
     class Program
     {
-        public const String PRODUCT_VERSION = "0.2";
+        public const String PRODUCT_VERSION = "1.0";
         private SQLServerDumpArguments arguments;
 
         public static void Main(string[] args)
