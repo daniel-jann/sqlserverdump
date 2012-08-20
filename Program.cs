@@ -13,7 +13,7 @@ namespace Helvartis.SQLServerDump
 {
     class Program
     {
-        public const String PRODUCT_VERSION = "1.0";
+        public const String PRODUCT_VERSION = "1.1";
         private SQLServerDumpArguments arguments;
 
         public static void Main(string[] args)
@@ -103,7 +103,7 @@ namespace Helvartis.SQLServerDump
                 {
                     if (!server.Databases.Contains(dbName))
                     {
-                        Console.Error.WriteLine(String.Format("database '{0}' doesn't exist", dbName));
+                        Console.Error.WriteLine(String.Format(Resources.ErrDatabaseNonExistent, dbName));
                         hasError = true;
                     }
                     else if (arguments.DatabaseObjects != null)
@@ -112,7 +112,7 @@ namespace Helvartis.SQLServerDump
                         {
                             if (!ContainsObject(server.Databases[dbName], objectName))
                             {
-                                Console.Error.WriteLine(String.Format("object '{0}' doesn't exist in database '{1}'", objectName, dbName));
+                                Console.Error.WriteLine(String.Format(Resources.ErrObjectNonExistentInDatabase, objectName, dbName));
                                 hasError = true;
                             }
                         }
@@ -128,8 +128,8 @@ namespace Helvartis.SQLServerDump
             {
                 Options = new ScriptingOptions()
                 {
-                    ScriptSchema = true,
-                    ScriptData = true,
+                    ScriptSchema = !arguments.NoSchema,
+                    ScriptData = !arguments.NoData,
                     ScriptBatchTerminator = true,
                     ScriptDataCompression = true,
                     ScriptOwner = true,
@@ -197,12 +197,12 @@ namespace Helvartis.SQLServerDump
                     String header = "-- DATABASE\n";
                     Output(db, output, scrp, null, ref header);
                     output.WriteLine(String.Format("USE {0};", db.Name));
-                    Output(db.Tables, output, scrp, "-- TABLES\n");
-                    Output(db.Views, output, scrp, "-- VIEWS\n");
-                    Output(db.UserDefinedFunctions, output, scrp, "-- USER DEFINED FUNCTIONS\n");
-                    Output(db.StoredProcedures, output, scrp, "-- STORED PROCEDURES\n");
-                    Output(db.Synonyms, output, scrp, "-- SYNONYMS\n");
-                    Output(db.Triggers, output, scrp, "-- TRIGGERS\n");
+                    if (!arguments.NoTables) { Output(db.Tables, output, scrp, "-- TABLES\n"); }
+                    if (!arguments.NoViews) { Output(db.Views, output, scrp, "-- VIEWS\n"); }
+                    if (!arguments.NoUserDefinedFunctions) { Output(db.UserDefinedFunctions, output, scrp, "-- USER DEFINED FUNCTIONS\n"); }
+                    if (!arguments.NoStoredProcedures) { Output(db.StoredProcedures, output, scrp, "-- STORED PROCEDURES\n"); }
+                    if (!arguments.NoSynonyms) { Output(db.Synonyms, output, scrp, "-- SYNONYMS\n"); }
+                    if (!arguments.NoTriggers) { Output(db.Triggers, output, scrp, "-- TRIGGERS\n"); }
                 }
             }
             catch (IOException)

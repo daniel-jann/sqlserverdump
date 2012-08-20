@@ -61,6 +61,15 @@ namespace Helvartis.SQLServerDump.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à database &apos;{0}&apos; doesn&apos;t exist.
+        /// </summary>
+        internal static string ErrDatabaseNonExistent {
+            get {
+                return ResourceManager.GetString("ErrDatabaseNonExistent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à An I/O error has occured while writing to the output (if using Result file, was the media disconnected during write ?).
         /// </summary>
         internal static string ErrIO {
@@ -84,6 +93,15 @@ namespace Helvartis.SQLServerDump.Properties {
         internal static string ErrNoLocalInstance {
             get {
                 return ResourceManager.GetString("ErrNoLocalInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à object &apos;{0}&apos; doesn&apos;t exist in database &apos;{1}&apos;.
+        /// </summary>
+        internal static string ErrObjectNonExistentInDatabase {
+            get {
+                return ResourceManager.GetString("ErrObjectNonExistentInDatabase", resourceCulture);
             }
         }
         
@@ -151,17 +169,43 @@ namespace Helvartis.SQLServerDump.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à You must specify a database.
+        /// </summary>
+        internal static string ErrUsageDatabaseRequired {
+            get {
+                return ResourceManager.GetString("ErrUsageDatabaseRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à You cannot use the databases option with the all-databases option..
+        /// </summary>
+        internal static string ErrUsageOptionsDatabaseAndAllDatabaseIncompatibles {
+            get {
+                return ResourceManager.GetString("ErrUsageOptionsDatabaseAndAllDatabaseIncompatibles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à You cannot use both options --no-schema and --no-data at the same time..
+        /// </summary>
+        internal static string ErrUsageOptionsNoSchemaAndNoDataIncompatibles {
+            get {
+                return ResourceManager.GetString("ErrUsageOptionsNoSchemaAndNoDataIncompatibles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à sqlserverdump version {version}
         ///By Daniel Jann, inspired by the mysqldump utility by
         ///Igor Romanenko, Monty, Jani &amp; Sinisa.
+        ///This sofware relies on SQL Server Management Objects (SMO) in order to generate
+        ///the SQL statements.
         ///This software comes with ABSOLUTELY NO WARRANTY. This is free software,
         ///and you are welcome to modify and redistribute it under the GPL license.
         ///
         ///When dumping data containing non-ascii base characters, use the --result-file
-        ///rather than dumping the command line output to a file, because dumping
-        ///the command-line to a file uses a DOS encoding.
-        ///
-        ///The resulting dump can be used in M [le reste de la chaîne a été tronqué]&quot;;.
+        ///rather than dumping the command line output to a file, b [le reste de la chaîne a été tronqué]&quot;;.
         /// </summary>
         internal static string Help {
             get {

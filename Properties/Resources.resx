@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ErrDatabaseNonExistent" xml:space="preserve">
+    <value>database '{0}' doesn't exist</value>
+  </data>
   <data name="ErrIO" xml:space="preserve">
     <value>An I/O error has occured while writing to the output (if using Result file, was the media disconnected during write ?)</value>
   </data>
@@ -125,6 +128,9 @@
   </data>
   <data name="ErrNoLocalInstance" xml:space="preserve">
     <value>There is no local instance running</value>
+  </data>
+  <data name="ErrObjectNonExistentInDatabase" xml:space="preserve">
+    <value>object '{0}' doesn't exist in database '{1}'</value>
   </data>
   <data name="ErrResultFileArgumentExceptionEmpty" xml:space="preserve">
     <value>Result file argument is empty.</value>
@@ -147,10 +153,21 @@
   <data name="ErrResultFileUnauthorizedAccessException" xml:space="preserve">
     <value>Access to result file is not authorized.</value>
   </data>
+  <data name="ErrUsageDatabaseRequired" xml:space="preserve">
+    <value>You must specify a database</value>
+  </data>
+  <data name="ErrUsageOptionsDatabaseAndAllDatabaseIncompatibles" xml:space="preserve">
+    <value>You cannot use the databases option with the all-databases option.</value>
+  </data>
+  <data name="ErrUsageOptionsNoSchemaAndNoDataIncompatibles" xml:space="preserve">
+    <value>You cannot use both options --no-schema and --no-data at the same time.</value>
+  </data>
   <data name="Help" xml:space="preserve">
     <value>sqlserverdump version {version}
 By Daniel Jann, inspired by the mysqldump utility by
 Igor Romanenko, Monty, Jani &amp; Sinisa.
+This sofware relies on SQL Server Management Objects (SMO) in order to generate
+the SQL statements.
 This software comes with ABSOLUTELY NO WARRANTY. This is free software,
 and you are welcome to modify and redistribute it under the GPL license.
 
@@ -191,7 +208,17 @@ The following options may be given:
 --system-databases    Include system databases. Not included by default.
 --system-objects      Include system objects (except for sysdiagrams table
                       which is always included). Not included by default.
-</value>
+--no-data             Do not write any table row information (that is, do not
+                      dump table contents).
+--no-schema           Do not write schema information (create table).
+--no-tables           Do not dump tables (neither schema, nor data).
+--no-views            Do not dump views definitions.
+--no-triggers         Do not dump triggers definitions.
+--no-synonyms         Do not dump synonyms definitions.
+--no-stored-procedures
+                      Do not dump stored procedures definitions.
+--no-user-defined-functions
+                      Do not dump user defined functions definitions.</value>
     <comment>--password[=name]     Password to use when connecting to server. If password is
                       not given it's solicited on stdin.</comment>
   </data>

@@ -13,14 +13,11 @@ namespace CommandLine.Utility
         private LinkedList<string> _orphanValues;
 
 		// Constructor
-		public Arguments(string[] Args, bool considerOnlyOrphanValuesAtEnd = true)
+		public Arguments(string[] Args, bool spaceIsAValidSeparator = true, bool considerOnlyOrphanValuesAtEnd = true)
 		{
             _orphanValues = new LinkedList<string>();
-			Regex splitter = new Regex( @"^-{1,2}|^/|=|:",
-																 RegexOptions.IgnoreCase | RegexOptions.Compiled);
- 
-			Regex remover = new Regex( @"^['""]?(.*?)['""]?$",
-																 RegexOptions.IgnoreCase | RegexOptions.Compiled);
+			Regex splitter = new Regex( @"^-{1,2}|^/|=|:", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+			Regex remover = new Regex( @"^['""]?(.*?)['""]?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
  
 			string parameter = null;
 			string[] parts;
@@ -64,10 +61,19 @@ namespace CommandLine.Utility
 							if (!base.ContainsKey(parameter))
 							{
                                 base.Add(parameter, "true");
-                                if (considerOnlyOrphanValuesAtEnd) { _orphanValues.Clear(); }
-							}
+                            }
+                            if (considerOnlyOrphanValuesAtEnd) { _orphanValues.Clear(); }
 						}
-						parameter = parts[1];
+                        parameter = parts[1];
+                        if (!spaceIsAValidSeparator)
+                        {
+                            if (!base.ContainsKey(parameter))
+                            {
+                                base.Add(parameter, "true");
+                            }
+                            if (considerOnlyOrphanValuesAtEnd) { _orphanValues.Clear(); }
+                            parameter = null;
+                        }
 						break;
  
 					// Parameter with enclosed value
