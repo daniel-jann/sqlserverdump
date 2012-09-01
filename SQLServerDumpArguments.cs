@@ -28,6 +28,7 @@ namespace Helvartis.SQLServerDump
         public bool NoStoredProcedures { get; private set; }
         public bool NoSynonyms { get; private set; }
         public bool NoTriggers { get; private set; }
+        public bool IsSqlEngine { get; private set; }
 
         public SQLServerDumpArguments(string[] args) : base(args, false, true)
         {
@@ -79,6 +80,7 @@ namespace Helvartis.SQLServerDump
             NoUserDefinedFunctions = ContainsKey("no-user-defined-functions");
             IncludeSystemDatabases = ContainsKey("system-databases");
             IncludeSystemObjects = ContainsKey("system-objects");
+            IsSqlEngine = ContainsKey("sqlengine");
             if (NoSchema && NoData)
             {
                 WrongOptions = true;

@@ -62,7 +62,7 @@ namespace Helvartis.SQLServerDump
                 }
                 arguments.ServerName = availableSqlServers.Rows[0].Field<String>("Name");
             }
-            else if (!arguments.ServerName.Contains('\\'))
+            else if (!arguments.IsSqlEngine && !arguments.ServerName.Contains('\\'))
             {
                 arguments.ServerName = ".\\" + arguments.ServerName;
             }
