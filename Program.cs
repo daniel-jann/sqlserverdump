@@ -49,18 +49,25 @@ namespace Helvartis.SQLServerDump
 
             if (arguments.ServerName == null)
             {
-                DataTable availableSqlServers = SmoApplication.EnumAvailableSqlServers(true);
-                if (availableSqlServers.Rows.Count > 1)
+                if (arguments.IsSqlEngine)
                 {
-                    Console.Error.WriteLine(Resources.ErrMoreThanOneLocalInstance);
-                    return;
+                    arguments.ServerName = "127.0.0.1";
                 }
-                if (availableSqlServers.Rows.Count == 0)
+                else
                 {
-                    Console.Error.WriteLine(Resources.ErrNoLocalInstance);
-                    return;
+                    DataTable availableSqlServers = SmoApplication.EnumAvailableSqlServers(true);
+                    if (availableSqlServers.Rows.Count > 1)
+                    {
+                        Console.Error.WriteLine(Resources.ErrMoreThanOneLocalInstance);
+                        return;
+                    }
+                    if (availableSqlServers.Rows.Count == 0)
+                    {
+                        Console.Error.WriteLine(Resources.ErrNoLocalInstance);
+                        return;
+                    }
+                    arguments.ServerName = availableSqlServers.Rows[0].Field<String>("Name");
                 }
-                arguments.ServerName = availableSqlServers.Rows[0].Field<String>("Name");
             }
             else if (!arguments.IsSqlEngine && !arguments.ServerName.Contains('\\'))
             {

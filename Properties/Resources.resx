@@ -205,6 +205,20 @@ The following options may be given:
                       always use this option (with this syntax or the one
                       above) as detecting the local instance doesn't always
                       work.
+--server-name=host    This option requires the sql-engine option to be used.
+                      server-name specifies to which host connect when
+                      connecting to a sql engine rather than a named instance.
+--sql-engine          Use sql engine rather than named instance. The
+                      server-name will be used as the host to which connect. If
+                      server-name is omitted, it will try to connect on the
+                      local host (127.0.0.1)
+--username=username   Connect using specified username
+--password[=password]
+                      Connect using specified password. If password is
+                      omitted, it will be prompted on stdin without
+                      echoing (good security practice on a command line as the
+                      password will not show on the screen nor in the command
+                      line history).
 --system-databases    Include system databases. Not included by default.
 --system-objects      Include system objects (except for sysdiagrams table
                       which is always included). Not included by default.
@@ -219,8 +233,6 @@ The following options may be given:
                       Do not dump stored procedures definitions.
 --no-user-defined-functions
                       Do not dump user defined functions definitions.</value>
-    <comment>--password[=name]     Password to use when connecting to server. If password is
-                      not given it's solicited on stdin.</comment>
   </data>
   <data name="Usage" xml:space="preserve">
     <value>Usage: sqlserverdump [OPTIONS] database [OBJECT1 [OBJECT2 [...]]]

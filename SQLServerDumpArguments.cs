@@ -80,7 +80,7 @@ namespace Helvartis.SQLServerDump
             NoUserDefinedFunctions = ContainsKey("no-user-defined-functions");
             IncludeSystemDatabases = ContainsKey("system-databases");
             IncludeSystemObjects = ContainsKey("system-objects");
-            IsSqlEngine = ContainsKey("sqlengine");
+            IsSqlEngine = ContainsKey("sql-engine");
             if (NoSchema && NoData)
             {
                 WrongOptions = true;
