@@ -226,6 +226,18 @@ The following options may be given:
                       dump table contents).
 --no-schema           Do not write schema information (create table).
 --no-tables           Do not dump tables (neither schema, nor data).
+--no-indexes          Do not dump indexes.
+--no-checks           Do not dump column specific dependency relationships as
+                      defined in check constraints with enforced declarative
+                      referential integrity
+--no-primary-key      Do not dump dependency relationships that are defined in
+                      primary keys which have enforced declarative referential
+                      integrity
+--no-foreign-keys     Do not dump dependency relationships defined in foreign
+                      keys with enforced declarative referential integrity
+--no-unique-keys      Do not dump dependency relationships that are defined in
+                      unique keys which have enforced declarative referential
+                      integrity
 --no-views            Do not dump views definitions.
 --no-triggers         Do not dump triggers definitions.
 --no-synonyms         Do not dump synonyms definitions.

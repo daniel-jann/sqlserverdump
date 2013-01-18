@@ -137,6 +137,12 @@ namespace Helvartis.SQLServerDump
                 {
                     ScriptSchema = !arguments.NoSchema,
                     ScriptData = !arguments.NoData,
+                    Triggers = !arguments.NoTriggers,
+                    Indexes = !arguments.NoIndexes,
+                    DriChecks = !arguments.NoChecks,
+                    DriPrimaryKey = !arguments.NoPrimaryKey,
+                    DriForeignKeys = !arguments.NoForeignKeys,
+                    DriUniqueKeys = !arguments.NoUniqueKeys,
                     ScriptBatchTerminator = true,
                     ScriptDataCompression = true,
                     ScriptOwner = true,

@@ -23,6 +23,11 @@ namespace Helvartis.SQLServerDump
         public bool NoData { get; private set; }
         public bool NoSchema { get; private set; }
         public bool NoTables { get; private set; }
+        public bool NoIndexes { get; private set; }
+        public bool NoChecks { get; private set; }
+        public bool NoPrimaryKey { get; private set; }
+        public bool NoForeignKeys { get; private set; }
+        public bool NoUniqueKeys { get; private set; }
         public bool NoViews { get; private set; }
         public bool NoUserDefinedFunctions { get; private set; }
         public bool NoStoredProcedures { get; private set; }
@@ -73,6 +78,11 @@ namespace Helvartis.SQLServerDump
             NoData = ContainsKey("no-data");
             NoSchema = ContainsKey("no-schema");
             NoTables = ContainsKey("no-tables");
+            NoIndexes = ContainsKey("no-indexes");
+            NoChecks = ContainsKey("no-checks");
+            NoPrimaryKey = ContainsKey("no-primary-key");
+            NoForeignKeys = ContainsKey("no-foreign-keys");
+            NoUniqueKeys = ContainsKey("no-unique-keys");
             NoViews = ContainsKey("no-views");
             NoTriggers = ContainsKey("no-triggers");
             NoSynonyms = ContainsKey("no-synonyms");
