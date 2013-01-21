@@ -29,6 +29,10 @@ namespace Helvartis.SQLServerDump
         public bool NoForeignKeys { get; private set; }
         public bool NoUniqueKeys { get; private set; }
         public bool NoViews { get; private set; }
+        public bool NoUserDefinedTypes { get; private set; }
+        public bool NoUserDefinedDataTypes { get; private set; }
+        public bool NoUserDefinedTableTypes { get; private set; }
+        public bool NoUserDefinedAggregates { get; private set; }
         public bool NoUserDefinedFunctions { get; private set; }
         public bool NoStoredProcedures { get; private set; }
         public bool NoSynonyms { get; private set; }
@@ -87,6 +91,10 @@ namespace Helvartis.SQLServerDump
             NoTriggers = ContainsKey("no-triggers");
             NoSynonyms = ContainsKey("no-synonyms");
             NoStoredProcedures = ContainsKey("no-stored-procedures");
+            NoUserDefinedTypes = ContainsKey("no-user-defined-types");
+            NoUserDefinedDataTypes = ContainsKey("no-user-defined-data-types");
+            NoUserDefinedTableTypes = ContainsKey("no-user-defined-table-types");
+            NoUserDefinedAggregates = ContainsKey("no-user-defined-aggregates");
             NoUserDefinedFunctions = ContainsKey("no-user-defined-functions");
             IncludeSystemDatabases = ContainsKey("system-databases");
             IncludeSystemObjects = ContainsKey("system-objects");

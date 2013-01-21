@@ -210,9 +210,13 @@ namespace Helvartis.SQLServerDump
                     String header = "-- DATABASE\n";
                     Output(db, output, scrp, null, ref header);
                     output.WriteLine(String.Format("USE {0};", db.Name));
+                    if (!arguments.NoUserDefinedTypes) { Output(db.UserDefinedTypes, output, scrp, "-- USER DEFINED TYPES\n"); }
+                    if (!arguments.NoUserDefinedDataTypes) { Output(db.UserDefinedDataTypes, output, scrp, "-- USER DEFINED DATA TYPES\n"); }
+                    if (!arguments.NoUserDefinedTableTypes) { Output(db.UserDefinedTableTypes, output, scrp, "-- USER DEFINED TABLE TYPES\n"); }
+                    if (!arguments.NoUserDefinedAggregates) { Output(db.UserDefinedAggregates, output, scrp, "-- USER DEFINED AGGREGATES\n"); }
+                    if (!arguments.NoUserDefinedFunctions) { Output(db.UserDefinedFunctions, output, scrp, "-- USER DEFINED FUNCTIONS\n"); }
                     if (!arguments.NoTables) { Output(db.Tables, output, scrp, "-- TABLES\n"); }
                     if (!arguments.NoViews) { Output(db.Views, output, scrp, "-- VIEWS\n"); }
-                    if (!arguments.NoUserDefinedFunctions) { Output(db.UserDefinedFunctions, output, scrp, "-- USER DEFINED FUNCTIONS\n"); }
                     if (!arguments.NoStoredProcedures) { Output(db.StoredProcedures, output, scrp, "-- STORED PROCEDURES\n"); }
                     if (!arguments.NoSynonyms) { Output(db.Synonyms, output, scrp, "-- SYNONYMS\n"); }
                     if (!arguments.NoTriggers) { Output(db.Triggers, output, scrp, "-- TRIGGERS\n"); }
@@ -256,7 +260,7 @@ namespace Helvartis.SQLServerDump
         private void Output(NamedSmoObject obj, TextWriter tw, Scripter scrp, LinkedList<string> outputAtEnd, ref String header)
         {
             if (
-                (!(bool)obj.Properties["IsSystemObject"].Value || IncludeSysObject(obj))
+                (!obj.Properties.Contains("IsSystemObject") || !(bool)obj.Properties["IsSystemObject"].Value) || IncludeSysObject(obj)
                     &&
                 IncludeObject(obj)
             )

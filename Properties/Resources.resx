@@ -243,6 +243,14 @@ The following options may be given:
 --no-synonyms         Do not dump synonyms definitions.
 --no-stored-procedures
                       Do not dump stored procedures definitions.
+--no-user-defined-types
+                      Do not dump user defined types definitions.
+--no-user-defined-data-types
+                      Do not dump user defined data types definitions.
+--no-user-defined-table-types
+                      Do not dump user defined table types definitions.
+--no-user-defined-aggregates
+                      Do not dump user defined aggregates definitions.
 --no-user-defined-functions
                       Do not dump user defined functions definitions.</value>
   </data>
