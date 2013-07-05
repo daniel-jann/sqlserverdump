@@ -14,6 +14,7 @@ namespace Helvartis.SQLServerDump
         public string[] Databases { get; set; }
         public bool IncludeSystemDatabases { get; private set; }
         public bool IncludeSystemObjects { get; private set; }
+        public bool IncludeSystemTables { get; private set; } // RS
         public string Password { get; private set; }
         public string ResultFile { get; private set; }
         public string ServerName { get; set; }
@@ -98,6 +99,7 @@ namespace Helvartis.SQLServerDump
             NoUserDefinedFunctions = ContainsKey("no-user-defined-functions");
             IncludeSystemDatabases = ContainsKey("system-databases");
             IncludeSystemObjects = ContainsKey("system-objects");
+            IncludeSystemTables = ContainsKey("system-tables"); // RS
             IsSqlEngine = ContainsKey("sql-engine");
             if (NoSchema && NoData)
             {
@@ -107,7 +109,8 @@ namespace Helvartis.SQLServerDump
             if (ContainsKey("server-name")) { ServerName = this["server-name"]; }
             if (ContainsKey("result-file")) { ResultFile = this["result-file"]; }
             if (ContainsKey("username")) { Username = this["username"]; }
-            if (ContainsKey("password")) {
+            if (ContainsKey("password"))
+            {
                 Password = this["password"];
                 if (Password == "true") // Password value not included in the command,
                 {                        // let's read it from stdin without echoing it.
@@ -116,7 +119,8 @@ namespace Helvartis.SQLServerDump
                     do
                     {
                         keyInfo = Console.ReadKey(true);
-                        if (keyInfo.Key != ConsoleKey.Enter && keyInfo.KeyChar != '\0') {
+                        if (keyInfo.Key != ConsoleKey.Enter && keyInfo.KeyChar != '\0')
+                        {
                             Password += keyInfo.KeyChar;
                         }
                     } while (keyInfo == null || keyInfo.Key != ConsoleKey.Enter);

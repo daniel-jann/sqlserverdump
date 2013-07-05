@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using Helvartis.SQLServerDump.Properties;
+﻿using Helvartis.SQLServerDump.Properties;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Sdk.Sfc;
 using Microsoft.SqlServer.Management.Smo;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
 using System.Security;
 
 namespace Helvartis.SQLServerDump
 {
     class Program
     {
-        public const String PRODUCT_VERSION = "1.1";
+        public const String PRODUCT_VERSION = "1.5";
         private SQLServerDumpArguments arguments;
 
         public static void Main(string[] args)
@@ -28,9 +29,12 @@ namespace Helvartis.SQLServerDump
                 ShowUsage();
                 return;
             }
-            try {
+            try
+            {
                 arguments = new SQLServerDumpArguments(args);
-            } catch (SQLServerDumpArgumentsException ex) {
+            }
+            catch (SQLServerDumpArgumentsException ex)
+            {
                 Console.Error.WriteLine(ex.Message);
                 return;
             }
@@ -89,21 +93,24 @@ namespace Helvartis.SQLServerDump
             }
             catch (ConnectionFailureException ex)
             {
-                Console.Error.WriteLine(ex.Message + (ex.InnerException != null ? ": "+ex.InnerException.Message : ""));
+                Console.Error.WriteLine(ex.Message + (ex.InnerException != null ? ": " + ex.InnerException.Message : ""));
                 return;
             }
-            
+
             if (arguments.Databases.Length == 0)
             {
                 LinkedList<string> dbs = new LinkedList<string>();
-                foreach (Database db in server.Databases) {
+                foreach (Database db in server.Databases)
+                {
                     if (arguments.IncludeSystemDatabases || !db.IsSystemObject)
                     {
                         dbs.AddLast(db.Name);
                     }
                 }
                 arguments.Databases = dbs.ToArray();
-            } else {
+            }
+            else
+            {
                 // Check if databases exist
                 bool hasError = false;
                 foreach (string dbName in arguments.Databases)
@@ -231,17 +238,17 @@ namespace Helvartis.SQLServerDump
 
         private void ShowHelp()
         {
-            Console.Out.Write(Resources.Help.Replace("{version}", PRODUCT_VERSION).Replace("{usage}",Resources.Usage));
+            Console.Out.Write(Resources.Help.Replace("{version}", PRODUCT_VERSION).Replace("{usage}", Resources.Usage));
         }
         private void ShowUsage()
         {
-            Console.Out.Write(Resources.Usage+"\n"+Resources.Usage_more);
+            Console.Out.Write(Resources.Usage + "\n" + Resources.Usage_more);
         }
         private bool OutputAtEnd(SmoObjectBase o, string s)
         {
             return o is Table && s.Contains("\nALTER") && !s.StartsWith("INSERT");
         }
-        private void Output(SmoCollectionBase coll, TextWriter tw ,Scripter scrp, String header = null)
+        private void Output(SmoCollectionBase coll, TextWriter tw, Scripter scrp, String header = null)
         {
             LinkedList<string> tableAlterings = new LinkedList<string>();
             foreach (ScriptSchemaObjectBase o in coll)
@@ -279,17 +286,30 @@ namespace Helvartis.SQLServerDump
                             header = null;
                         }
                         tw.WriteLine(s.TrimEnd() + ";");
+                        if ((s.Contains("CREATE TABLE") && obj.Properties.Contains("IsSystemObject") && ((bool)obj.Properties["IsSystemObject"].Value) && IncludeSysObject(obj)))
+                        {
+                            tw.WriteLine(MarkSystemObject(obj.Name));
+                        }
                     }
                 }
             }
         }
+
+        private string MarkSystemObject(string p)
+        {
+            return String.Format(@"BEGIN TRY
+                                    EXEC sp_MS_marksystemobject '{0}'
+                                  END TRY
+                                  BEGIN CATCH
+                                  END CATCH;", p);
+        }
         private bool IncludeSysObject(SmoObjectBase o)
         {
-            return arguments.IncludeSystemObjects || (o is Table ? ((Table)o).Name == "sysdiagrams" : false);
+            return arguments.IncludeSystemObjects || (o is Table ? ((Table)o).Name == "sysdiagrams" : false) || (arguments.IncludeSystemTables && o is Table);
         }
         private bool IncludeObject(NamedSmoObject obj)
         {
-            return arguments.DatabaseObjects == null || arguments.DatabaseObjects.Contains(obj.Name) || arguments.DatabaseObjects.Contains(obj.ToString()) || arguments.DatabaseObjects.Contains(obj.ToString().Replace("[","").Replace("]",""));
+            return arguments.DatabaseObjects == null || arguments.DatabaseObjects.Contains(obj.Name) || arguments.DatabaseObjects.Contains(obj.ToString()) || arguments.DatabaseObjects.Contains(obj.ToString().Replace("[", "").Replace("]", ""));
         }
         private bool ContainsObject(Database database, String objectName)
         {
