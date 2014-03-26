@@ -1,28 +1,33 @@
-﻿using Helvartis.SQLServerDump.Properties;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Sdk.Sfc;
-using Microsoft.SqlServer.Management.Smo;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security;
+using System.Text.RegularExpressions;
+using Helvartis.SQLServerDump.Properties;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Sdk.Sfc;
+using Microsoft.SqlServer.Management.Smo;
 
 namespace Helvartis.SQLServerDump
 {
+    /// <summary>
+    /// Known bugs:
+    /// - When dumping the database created by the script from http://technet.microsoft.com/en-us/library/dd283095%28v=sql.100%29.aspx, GRANT XXX ON SCHEMA::[dbo] TO [Developer_Role] is missing.
+    /// </summary>
     class Program
     {
-        public const String PRODUCT_VERSION = "1.5";
         private SQLServerDumpArguments arguments;
 
         public static void Main(string[] args)
         {
-            new Program().run(args);
+            new Program().Run(args);
         }
 
-        public void run(string[] args)
+        public void Run(string[] args)
         {
             if (args.Length == 0)
             {
@@ -57,7 +62,7 @@ namespace Helvartis.SQLServerDump
                 {
                     arguments.ServerName = "127.0.0.1";
                 }
-                else
+                else if (arguments.ConnectionString == null)
                 {
                     DataTable availableSqlServers = SmoApplication.EnumAvailableSqlServers(true);
                     if (availableSqlServers.Rows.Count > 1)
@@ -81,7 +86,11 @@ namespace Helvartis.SQLServerDump
             Server server;
             try
             {
-                if (arguments.Username != null)
+                if (arguments.ConnectionString != null)
+                {
+                    server = new Server(new ServerConnection(new SqlConnection(arguments.ConnectionString)));
+                }
+                else if (arguments.Username != null)
                 {
                     server = new Server(new ServerConnection(arguments.ServerName, arguments.Username, arguments.Password == null ? "" : arguments.Password));
                 }
@@ -142,8 +151,10 @@ namespace Helvartis.SQLServerDump
             {
                 Options = new ScriptingOptions()
                 {
+                    Permissions = !arguments.NoPermission,
                     ScriptSchema = !arguments.NoSchema,
                     ScriptData = !arguments.NoData,
+                    // ScriptDrops = arguments.DropObjects, // Option set later as it requires special handling
                     Triggers = !arguments.NoTriggers,
                     Indexes = !arguments.NoIndexes,
                     DriChecks = !arguments.NoChecks,
@@ -214,19 +225,51 @@ namespace Helvartis.SQLServerDump
                 foreach (string dbName in arguments.Databases)
                 {
                     Database db = server.Databases[dbName];
-                    String header = "-- DATABASE\n";
-                    Output(db, output, scrp, null, ref header);
-                    output.WriteLine(String.Format("USE {0};", db.Name));
-                    if (!arguments.NoUserDefinedTypes) { Output(db.UserDefinedTypes, output, scrp, "-- USER DEFINED TYPES\n"); }
-                    if (!arguments.NoUserDefinedDataTypes) { Output(db.UserDefinedDataTypes, output, scrp, "-- USER DEFINED DATA TYPES\n"); }
-                    if (!arguments.NoUserDefinedTableTypes) { Output(db.UserDefinedTableTypes, output, scrp, "-- USER DEFINED TABLE TYPES\n"); }
-                    if (!arguments.NoUserDefinedAggregates) { Output(db.UserDefinedAggregates, output, scrp, "-- USER DEFINED AGGREGATES\n"); }
-                    if (!arguments.NoUserDefinedFunctions) { Output(db.UserDefinedFunctions, output, scrp, "-- USER DEFINED FUNCTIONS\n"); }
-                    if (!arguments.NoTables) { Output(db.Tables, output, scrp, "-- TABLES\n"); }
-                    if (!arguments.NoViews) { Output(db.Views, output, scrp, "-- VIEWS\n"); }
-                    if (!arguments.NoStoredProcedures) { Output(db.StoredProcedures, output, scrp, "-- STORED PROCEDURES\n"); }
-                    if (!arguments.NoSynonyms) { Output(db.Synonyms, output, scrp, "-- SYNONYMS\n"); }
-                    if (!arguments.NoTriggers) { Output(db.Triggers, output, scrp, "-- TRIGGERS\n"); }
+                    if (arguments.DropDb)
+                    {
+                        scrp.Options.ScriptDrops = true;
+                        String header = "-- DROP DATABASE\n";
+                        Output(db, output, scrp, null, ref header); // Drop db
+                        scrp.Options.ScriptDrops = false;
+                    }
+                    else if (arguments.DropObjects) // DropDb and DropObjects are mutually exclusive
+                    {
+                        scrp.Options.ScriptDrops = true;
+                        if (!arguments.NoUseDb) { output.WriteLine(String.Format("USE {0};{1}", db.Name, arguments.IncludeBatchSeparator ? "\nGO" : "")); }
+                        if (!arguments.NoTriggers) { Output(db.Triggers, output, scrp, "\n-- DROP TRIGGERS\n"); }
+                        if (!arguments.NoSynonyms) { Output(db.Synonyms, output, scrp, "\n-- DROP SYNONYMS\n"); }
+                        if (!arguments.NoStoredProcedures) { Output(db.StoredProcedures, output, scrp, "\n-- DROP STORED PROCEDURES\n"); }
+                        if (!arguments.NoViews) { Output(db.Views, output, scrp, "\n-- DROP VIEWS\n"); }
+                        if (!arguments.NoTables) { Output(db.Tables, output, scrp, "\n-- DROP TABLES\n"); }
+                        if (!arguments.NoUserDefinedFunctions) { Output(db.UserDefinedFunctions, output, scrp, "\n-- DROP USER DEFINED FUNCTIONS\n"); }
+                        if (!arguments.NoUserDefinedAggregates) { Output(db.UserDefinedAggregates, output, scrp, "\n-- DROP USER DEFINED AGGREGATES\n"); }
+                        if (!arguments.NoUserDefinedTableTypes) { Output(db.UserDefinedTableTypes, output, scrp, "\n-- DROP USER DEFINED TABLE TYPES\n"); }
+                        if (!arguments.NoUserDefinedDataTypes) { Output(db.UserDefinedDataTypes, output, scrp, "\n-- DROP USER DEFINED DATA TYPES\n"); }
+                        if (!arguments.NoUserDefinedTypes) { Output(db.UserDefinedTypes, output, scrp, "\n-- DROP USER DEFINED TYPES\n"); }
+                        if (!arguments.NoDbSchemas) { Output(db.Schemas, output, scrp, "\n-- DROP SCHEMAS\n"); }
+                        if (!arguments.NoRoles) { Output(db.Roles, output, scrp, "\n-- DROP ROLES\n"); }
+                        if (!arguments.NoUsers) { Output(db.Users, output, scrp, "\n-- DROP USERS\n"); }
+                        scrp.Options.ScriptDrops = false;
+                    }
+                    if (!arguments.NoSchema || !arguments.NoData)
+                    {
+                        String header = "\n-- DATABASE\n";
+                        if (!arguments.NoCreateDb) { Output(db, output, scrp, null, ref header); }
+                        if (!arguments.NoUseDb) { output.WriteLine(String.Format("USE {0};{1}", db.Name, arguments.IncludeBatchSeparator ? "\nGO" : "")); }
+                        if (!arguments.NoUsers) { Output(db.Users, output, scrp, "\n-- USERS\n"); }
+                        if (!arguments.NoRoles) { Output(db.Roles, output, scrp, "\n-- ROLES\n"); }
+                        if (!arguments.NoDbSchemas) { Output(db.Schemas, output, scrp, "\n-- SCHEMAS\n"); }
+                        if (!arguments.NoUserDefinedTypes) { Output(db.UserDefinedTypes, output, scrp, "\n-- USER DEFINED TYPES\n"); }
+                        if (!arguments.NoUserDefinedDataTypes) { Output(db.UserDefinedDataTypes, output, scrp, "\n-- USER DEFINED DATA TYPES\n"); }
+                        if (!arguments.NoUserDefinedTableTypes) { Output(db.UserDefinedTableTypes, output, scrp, "\n-- USER DEFINED TABLE TYPES\n"); }
+                        if (!arguments.NoUserDefinedAggregates) { Output(db.UserDefinedAggregates, output, scrp, "\n-- USER DEFINED AGGREGATES\n"); }
+                        if (!arguments.NoUserDefinedFunctions) { Output(db.UserDefinedFunctions, output, scrp, "\n-- USER DEFINED FUNCTIONS\n"); }
+                        if (!arguments.NoTables) { Output(db.Tables, output, scrp, "\n-- TABLES\n"); }
+                        if (!arguments.NoViews) { Output(db.Views, output, scrp, "\n-- VIEWS\n"); }
+                        if (!arguments.NoStoredProcedures) { Output(db.StoredProcedures, output, scrp, "\n-- STORED PROCEDURES\n"); }
+                        if (!arguments.NoSynonyms) { Output(db.Synonyms, output, scrp, "\n-- SYNONYMS\n"); }
+                        if (!arguments.NoTriggers) { Output(db.Triggers, output, scrp, "\n-- TRIGGERS\n"); }
+                    }
                 }
             }
             catch (IOException)
@@ -235,10 +278,13 @@ namespace Helvartis.SQLServerDump
             }
             output.Close();
         }
-
+        private string GetDisplayVersionFromAssembly()
+        {
+            return Regex.Replace(Assembly.GetExecutingAssembly().GetName().Version.ToString(), "(\\.0)+", delegate(Match m) { return ""; });
+        }
         private void ShowHelp()
         {
-            Console.Out.Write(Resources.Help.Replace("{version}", PRODUCT_VERSION).Replace("{usage}", Resources.Usage));
+            Console.Out.Write(Resources.Help.Replace("{version}", GetDisplayVersionFromAssembly()).Replace("{usage}", Resources.Usage));
         }
         private void ShowUsage()
         {
@@ -251,17 +297,36 @@ namespace Helvartis.SQLServerDump
         private void Output(SmoCollectionBase coll, TextWriter tw, Scripter scrp, String header = null)
         {
             LinkedList<string> tableAlterings = new LinkedList<string>();
-            foreach (ScriptSchemaObjectBase o in coll)
+            // When dropping tables, table alterings (drop constraints) must be output first,
+            // so we place the main table operations (drop) in a temporary writer (tmpWriter),
+            // output the table alterings (drop constraint) to the main writer and then output
+            // the temporary writer to the main writer.
+            TextWriter tmpWriter = scrp.Options.ScriptDrops ? new StringWriter() : tw;
+            String tmpHeader = scrp.Options.ScriptDrops ? null : header;
+            foreach (NamedSmoObject o in coll)
             {
-                Output(o, tw, scrp, tableAlterings, ref header);
+                if (!(o is DatabaseRole) || (!((DatabaseRole)o).IsFixedRole && o.Name != "public")) // Don't output fixed database roles neither the "public" database role
+                {
+                    Output(o, tmpWriter, scrp, tableAlterings, ref tmpHeader);
+                }
             }
+            if (!scrp.Options.ScriptDrops) { header = tmpHeader; }
             foreach (string s in tableAlterings)
             {
                 if (header != null)
                 {
                     tw.WriteLine(header);
+                    header = null;
                 }
                 tw.WriteLine(s);
+            }
+            if (scrp.Options.ScriptDrops)
+            {
+                if (tmpWriter.ToString().Length > 0 && header != null)
+                {
+                    tw.WriteLine(header);
+                }
+                tw.Write(tmpWriter);
             }
         }
         private void Output(NamedSmoObject obj, TextWriter tw, Scripter scrp, LinkedList<string> outputAtEnd, ref String header)
@@ -272,11 +337,25 @@ namespace Helvartis.SQLServerDump
                 IncludeObject(obj)
             )
             {
+                // Don't include CLR objects (they can't be scripted)
+                if (
+                    obj.Discover().Count > 0 &&
+                    obj.Discover()[0].GetType().GetProperty("ImplementationType") != null &&
+                    obj.Discover()[0].GetType().GetProperty("ImplementationType").GetValue(obj.Discover()[0], null) is ImplementationType &&
+                    (ImplementationType)obj.Discover()[0].GetType().GetProperty("ImplementationType").GetValue(obj.Discover()[0], null) == ImplementationType.SqlClr
+                )
+                { 
+                    return;
+                }
+
+                bool hasContent = false;
+                bool hasOutputAtEnd = false;
                 foreach (string s in scrp.EnumScript(new Urn[] { obj.Urn }))
                 {
                     if (outputAtEnd != null && OutputAtEnd(obj, s))
                     {
                         outputAtEnd.AddLast(s.TrimEnd() + ";");
+                        hasOutputAtEnd = true;
                     }
                     else
                     {
@@ -290,7 +369,16 @@ namespace Helvartis.SQLServerDump
                         {
                             tw.WriteLine(MarkSystemObject(obj.Name));
                         }
+                        hasContent = true;
                     }
+                }
+                if (hasContent && arguments.IncludeBatchSeparator)
+                {
+                    tw.WriteLine("GO");
+                }
+                if (hasOutputAtEnd && arguments.IncludeBatchSeparator)
+                {
+                    outputAtEnd.AddLast("GO");
                 }
             }
         }

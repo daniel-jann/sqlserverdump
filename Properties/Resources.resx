@@ -156,11 +156,29 @@
   <data name="ErrUsageDatabaseRequired" xml:space="preserve">
     <value>You must specify a database</value>
   </data>
+  <data name="ErrUsageOptionsConnectionStringIncompatibility" xml:space="preserve">
+    <value>You cannot use the connection-string option with any of the options: server-name, sql-engine, username or password.</value>
+  </data>
   <data name="ErrUsageOptionsDatabaseAndAllDatabaseIncompatibles" xml:space="preserve">
     <value>You cannot use the databases option with the all-databases option.</value>
   </data>
+  <data name="ErrUsageOptionsDropDbAndDropObjectsIncompatibles" xml:space="preserve">
+    <value>You cannot use the drop-db option with the drop-objects option.</value>
+  </data>
+  <data name="ErrUsageOptionsDropDbWithNoCreateDbOnlyWhenNoSchemaAndNoData" xml:space="preserve">
+    <value>You may use the drop-db option with the no-create-db option only with both the no-schema and no-data options</value>
+  </data>
+  <data name="ErrUsageOptionsDropWithDataAndNoSchemaIncompatibles" xml:space="preserve">
+    <value>You must use the no-data option when using the no-schema option with either the drop-db or drop-objects option.</value>
+  </data>
   <data name="ErrUsageOptionsNoSchemaAndNoDataIncompatibles" xml:space="preserve">
-    <value>You cannot use both options --no-schema and --no-data at the same time.</value>
+    <value>You cannot use both options no-schema and no-data at the same time, except when using the drop-db or drop-objects options.</value>
+  </data>
+  <data name="ErrUsagePasswordAlreadyInConnectionString" xml:space="preserve">
+    <value>You cannot use the password option when there is already a password in the connection string</value>
+  </data>
+  <data name="ErrUsageUnknownOptions" xml:space="preserve">
+    <value>Unknown option(s) : {0}</value>
   </data>
   <data name="Help" xml:space="preserve">
     <value>sqlserverdump version {version}
@@ -192,19 +210,21 @@ The following options may be given:
 --server-name=instancename
                       Connect to the local instance instancename. If this
                       option is omitted, it will try to connect to the local
-                      instance. If there is more than one local instance, an
-                      error message will be output. It is recommended to
-                      always use this option (with this syntax or the one
-                      below) as detecting the local instance doesn't always
-                      work.
+                      instance (unless the connection-string option is used).
+                      If there is more than one local instance, an error message
+                      will be output. When not using the connection-string
+                      option, it is recommended to always use this option (with
+                      this syntax or the one below) as detecting the local
+                      instance doesn't always work.
 --server-name=host\instancename
                       Connect to the instance instancename on host. If this
                       option is omitted, it will try to connect to the local
-                      instance. If there is more than one local instance, an
-                      error message will be output. It is recommended to
-                      always use this option (with this syntax or the one
-                      above) as detecting the local instance doesn't always
-                      work.
+                      instance (unless the connection-string option is used).
+                      If there is more than one instance, an error message will
+                      be output. When not using the connection-string
+                      option, it is recommended to always use this option (with
+                      this syntax or the one above) as detecting the local
+                      instance doesn't always work.
 --server-name=host    This option requires the sql-engine option to be used.
                       server-name specifies to which host connect when
                       connecting to a sql engine rather than a named instance.
@@ -219,14 +239,34 @@ The following options may be given:
                       echoing (good security practice on a command line as the
                       password will not show on the screen nor in the command
                       line history).
+--connection-string="connection string"
+                      Use the given connection string to connect to server
+                      instead of the server-name and username options. Password
+                      can either be included in connection-string or the
+                      password option may be used, in which case the given
+                      password will be prepended to the connection string.
+                      If the connection string contains a database, it will be
+                      that one which will be dumped, but only in the last usage
+                      case, that is when a database is not mentionned elsewhere.
+                      This option may not be used in conjunction with the
+                      server-name, sql-engine, and username options.
 --system-databases    Include system databases. Not included by default.
 --system-objects      Include system objects (except for sysdiagrams table
                       which is always included). Not included by default.
 --system-tables       Include system tables (except for sysdiagrams table
-		      which is always included). Not included by default.
+                      which is always included). Not included by default.
+--batch-separator     Include batch separators (GO)
+--drop-objects        Drop all objects first, except for database.
+--drop-db             Drop database.
+--no-use-db           Do not include a USE db.
+--no-create-db        Do not create database.
+--no-users            Do not dump users.
+--no-roles            Do not dump roles.
+--no-permissions      Do not dump permissions.
 --no-data             Do not write any table row information (that is, do not
                       dump table contents).
---no-schema           Do not write schema information (create table).
+--no-schema           Do not write schema information (create table, ...).
+--no-db-schemas       Do not dump schemas.
 --no-tables           Do not dump tables (neither schema, nor data).
 --no-indexes          Do not dump indexes.
 --no-checks           Do not dump column specific dependency relationships as
@@ -259,7 +299,10 @@ The following options may be given:
   <data name="Usage" xml:space="preserve">
     <value>Usage: sqlserverdump [OPTIONS] database [OBJECT1 [OBJECT2 [...]]]
 OR     sqlserverdump [OPTIONS] --databases [OPTIONS] DB1 [DB2 [DB3 [...]]]
-OR     sqlserverdump [OPTIONS] --all-databases [OPTIONS]</value>
+OR     sqlserverdump [OPTIONS] --all-databases [OPTIONS]
+OR (*) sqlserverdump [OPTIONS] [OBJECT1 [OBJECT2 [...]]]
+
+(*) when using a connection string specifying a database</value>
   </data>
   <data name="Usage_more" xml:space="preserve">
     <value>For more options, use sqlserverdump --help</value>
