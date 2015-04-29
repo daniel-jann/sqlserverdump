@@ -332,7 +332,7 @@ namespace Helvartis.SQLServerDump
         private void Output(NamedSmoObject obj, TextWriter tw, Scripter scrp, LinkedList<string> outputAtEnd, ref String header)
         {
             if (
-                (!obj.Properties.Contains("IsSystemObject") || !(bool)obj.Properties["IsSystemObject"].Value) || IncludeSysObject(obj)
+                (!obj.Properties.Contains("IsSystemObject") || !(bool)obj.Properties["IsSystemObject"].Value || IncludeSysObject(obj))
                     &&
                 IncludeObject(obj)
             )
