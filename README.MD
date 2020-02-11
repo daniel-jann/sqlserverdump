@@ -22,3 +22,5 @@ yours: IA64 = Itanium, x64 = Windows 64 bits, x86 = Windows 32 bits)
 Currently, only features of SQL Server up to 2008 are meant to be supported.
 That is, it will probably work with newer versions but you won't be able to
 dump the new features of these versions (things like SEQUENCE, ...)
+
+This project's code was originally hosted on http://sqlserverdump.codeplex.com/
