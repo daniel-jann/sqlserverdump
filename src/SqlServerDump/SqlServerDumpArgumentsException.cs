@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Helvartis.SQLServerDump
+namespace Helvartis.SqlServerDump
 {
-    class SQLServerDumpArgumentsException : Exception
+    class SqlServerDumpArgumentsException : Exception
     {
-        public SQLServerDumpArgumentsException(string message) : base(message) { }
+        public SqlServerDumpArgumentsException(string message) : base(message) { }
     }
 }

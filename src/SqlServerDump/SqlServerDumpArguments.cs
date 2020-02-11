@@ -4,9 +4,9 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 using CommandLine.Utility;
-using Helvartis.SQLServerDump.Properties;
+using Helvartis.SqlServerDump.Properties;
 
-namespace Helvartis.SQLServerDump
+namespace Helvartis.SqlServerDump
 {
     // TODO: replace the Arguments utility by a more advanced one. One
     // that would allow defining which options to use, wether they are
@@ -22,7 +22,7 @@ namespace Helvartis.SQLServerDump
     // on other DLLs, so you can fetch the .exe and it just runs. (We have
     // dependencies on other DLLs, but it's quite likely the user will
     // already have those DLLs)
-    class SQLServerDumpArguments : Arguments
+    class SqlServerDumpArguments : Arguments
     {
         public string[] AllowedOptionsList = new string[] {
             "all-databases", "databases", "result-file", "server-name", "sql-engine",
@@ -75,7 +75,7 @@ namespace Helvartis.SQLServerDump
         public bool NoTriggers { get; private set; }
         public bool IsSqlEngine { get; private set; }
 
-        public SQLServerDumpArguments(string[] args) : base(args, false, true)
+        public SqlServerDumpArguments(string[] args) : base(args, false, true)
         {
             WrongOptions = false;
 
@@ -84,7 +84,7 @@ namespace Helvartis.SQLServerDump
             if (unknownOptions.Count() > 0)
             {
                 WrongOptions = true;
-                throw new SQLServerDumpArgumentsException(String.Format(Resources.ErrUsageUnknownOptions, String.Join(", ", unknownOptions)));
+                throw new SqlServerDumpArgumentsException(String.Format(Resources.ErrUsageUnknownOptions, String.Join(", ", unknownOptions)));
             }
 
             // Show help ?
@@ -96,7 +96,7 @@ namespace Helvartis.SQLServerDump
             if (ConnectionString != null && (ContainsKey("server-name") || ContainsKey("sql-engine") || ContainsKey("username")))
             {
                 WrongOptions = true;
-                throw new SQLServerDumpArgumentsException(Resources.ErrUsageOptionsConnectionStringIncompatibility);
+                throw new SqlServerDumpArgumentsException(Resources.ErrUsageOptionsConnectionStringIncompatibility);
             }
 
             // Which database(s) and table(s)
@@ -104,7 +104,7 @@ namespace Helvartis.SQLServerDump
             if (ContainsKey("databases") && AllDatabases)
             {
                 WrongOptions = true;
-                throw new SQLServerDumpArgumentsException(Resources.ErrUsageOptionsDatabaseAndAllDatabaseIncompatibles);
+                throw new SqlServerDumpArgumentsException(Resources.ErrUsageOptionsDatabaseAndAllDatabaseIncompatibles);
             }
             if (ContainsKey("databases"))
             {
@@ -129,7 +129,7 @@ namespace Helvartis.SQLServerDump
                     if (Databases == null || String.IsNullOrEmpty(Databases[0]))
                     {
                         WrongOptions = true;
-                        throw new SQLServerDumpArgumentsException(Resources.ErrUsageDatabaseRequired);
+                        throw new SqlServerDumpArgumentsException(Resources.ErrUsageDatabaseRequired);
                     }
                 }
                 if (OrphanValues.Count > 0)
@@ -174,22 +174,22 @@ namespace Helvartis.SQLServerDump
             if (DropDb && DropObjects)
             {
                 WrongOptions = true;
-                throw new SQLServerDumpArgumentsException(Resources.ErrUsageOptionsDropDbAndDropObjectsIncompatibles);
+                throw new SqlServerDumpArgumentsException(Resources.ErrUsageOptionsDropDbAndDropObjectsIncompatibles);
             }
             if (NoSchema && NoData && !DropDb && !DropObjects)
             {
                 WrongOptions = true;
-                throw new SQLServerDumpArgumentsException(Resources.ErrUsageOptionsNoSchemaAndNoDataIncompatibles);
+                throw new SqlServerDumpArgumentsException(Resources.ErrUsageOptionsNoSchemaAndNoDataIncompatibles);
             }
             if ((DropDb || DropObjects) && NoSchema && !NoData)
             {
                 WrongOptions = true;
-                throw new SQLServerDumpArgumentsException(Resources.ErrUsageOptionsDropWithDataAndNoSchemaIncompatibles);
+                throw new SqlServerDumpArgumentsException(Resources.ErrUsageOptionsDropWithDataAndNoSchemaIncompatibles);
             }
             if (DropDb && NoCreateDb && !NoSchema && !NoData)
             {
                 WrongOptions = true;
-                throw new SQLServerDumpArgumentsException(Resources.ErrUsageOptionsDropDbWithNoCreateDbOnlyWhenNoSchemaAndNoData);
+                throw new SqlServerDumpArgumentsException(Resources.ErrUsageOptionsDropDbWithNoCreateDbOnlyWhenNoSchemaAndNoData);
             }
             if (ContainsKey("server-name")) { ServerName = this["server-name"]; }
             if (ContainsKey("result-file")) { ResultFile = this["result-file"]; }
@@ -199,7 +199,7 @@ namespace Helvartis.SQLServerDump
                 if (!String.IsNullOrWhiteSpace(ConnectionString) && Regex.IsMatch(ConnectionString.ToLower(), "(^|\\W)(pwd|password)\\s*="))
                 {
                     WrongOptions = true;
-                    throw new SQLServerDumpArgumentsException(Resources.ErrUsagePasswordAlreadyInConnectionString);
+                    throw new SqlServerDumpArgumentsException(Resources.ErrUsagePasswordAlreadyInConnectionString);
                 }
                 Password = this["password"];
                 if (Password == "true") // Password value not included in the command,

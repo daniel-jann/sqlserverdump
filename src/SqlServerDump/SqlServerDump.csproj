@@ -8,8 +8,8 @@
     <ProjectGuid>{B350CE88-0FC7-46CC-A6F0-82BDB7FC685B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Helvartis.SQLServerDump</RootNamespace>
-    <AssemblyName>sqlserverdump</AssemblyName>
+    <RootNamespace>Helvartis.SqLServerDump</RootNamespace>
+    <AssemblyName>SqlServerDump</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -49,7 +49,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Helvartis.SQLServerDump.Program</StartupObject>
+    <StartupObject>Helvartis.SqlServerDump.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
@@ -85,8 +85,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SQLServerDumpArguments.cs" />
-    <Compile Include="SQLServerDumpArgumentsException.cs" />
+    <Compile Include="SqlServerDumpArguments.cs" />
+    <Compile Include="SqlServerDumpArgumentsException.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

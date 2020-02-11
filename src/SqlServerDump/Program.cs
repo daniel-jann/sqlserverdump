@@ -7,12 +7,12 @@ using System.Linq;
 using System.Reflection;
 using System.Security;
 using System.Text.RegularExpressions;
-using Helvartis.SQLServerDump.Properties;
+using Helvartis.SqlServerDump.Properties;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Sdk.Sfc;
 using Microsoft.SqlServer.Management.Smo;
 
-namespace Helvartis.SQLServerDump
+namespace Helvartis.SqlServerDump
 {
     /// <summary>
     /// Known bugs:
@@ -20,7 +20,7 @@ namespace Helvartis.SQLServerDump
     /// </summary>
     class Program
     {
-        private SQLServerDumpArguments arguments;
+        private SqlServerDumpArguments arguments;
 
         public static void Main(string[] args)
         {
@@ -36,9 +36,9 @@ namespace Helvartis.SQLServerDump
             }
             try
             {
-                arguments = new SQLServerDumpArguments(args);
+                arguments = new SqlServerDumpArguments(args);
             }
-            catch (SQLServerDumpArgumentsException ex)
+            catch (SqlServerDumpArgumentsException ex)
             {
                 Console.Error.WriteLine(ex.Message);
                 return;
